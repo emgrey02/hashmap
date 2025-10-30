@@ -28,6 +28,7 @@ const HashMap = () => {
 	};
 
 	let set = (key, value) => {
+		// todo: if key exists, replace value with new value
 		let index = hash(key);
 
 		if (index < 0 || index >= capacity) {
@@ -48,6 +49,10 @@ const HashMap = () => {
 	let get = (key) => {
 		let index = hash(key);
 
+		if (index < 0 || index >= capacity) {
+			throw new Error('Trying to access index out of bounds');
+		}
+
 		if (hashmap[index]) {
 			if (hashmap[index].length == 1) {
 				return hashmap[index][0].key == key
@@ -65,23 +70,55 @@ const HashMap = () => {
 		return null;
 	};
 
-	// let has = (key) => {
-	// 	let index = hash(key);
+	let has = (key) => {
+		let index = hash(key);
 
-	// 	if (hashmap[index]) {
-	// 		if (hashmap[index].length == 1) {
-	// 			return hashmap[index][0].key == key && true;
-	// 		} else {
-	// 			for (let i = 0; i < hashmap[index].length; i++) {
-	// 				if (hashmap[index][i].key == key) {
-	// 					return hashmap[index][i].value;
-	// 				}
-	// 			}
-	// 			return null;
-	// 		}
-	// 	}
-	// 	return null;
-	// };
+		if (index < 0 || index >= capacity) {
+			throw new Error('Trying to access index out of bounds');
+		}
+
+		if (hashmap[index]) {
+			if (hashmap[index].length == 1) {
+				if (hashmap[index][0].key == key) {
+					return true;
+				}
+			} else {
+				for (let i = 0; i < hashmap[index].length; i++) {
+					if (hashmap[index][i].key == key) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+		return false;
+	};
+
+	let remove = (key) => {
+		let index = hash(key);
+
+		if (index < 0 || index >= capacity) {
+			throw new Error('Trying to access index out of bounds');
+		}
+
+		// if (hashmap[index]) {
+		// 	if (hashmap[index].length == 1) {
+		// 		if (hashmap[index][0].key == key) {
+		// 			hashmap[index] = null;
+		// 		}
+		// 	} else {
+		// 		for (let i = 0; i < hashmap[index].length; i++) {
+		// 			if (hashmap[index][i].key == key) {
+		// 				return true;
+		// 			}
+		// 		}
+		// 		return false;
+		// 	}
+		// }
+		// return false;
+	};
+
+	let length = () => {};
 
 	let print = () => {
 		return hashmap;
@@ -92,5 +129,7 @@ const HashMap = () => {
 
 let mappyMap = HashMap();
 mappyMap.set('Fred', 'Smith');
+
 console.log(mappyMap.get('Fred'));
+console.log(mappyMap.has('Fred'));
 console.log(mappyMap.print());
