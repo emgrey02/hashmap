@@ -20,6 +20,7 @@ const HashMap = () => {
 
 		const primeNumber = 31;
 		for (let i = 0; i < key.length; i++) {
+			console.log(capacity);
 			hashCode = primeNumber * hashCode + key.charCodeAt(i);
 			hashCode = hashCode % capacity;
 		}
@@ -39,14 +40,20 @@ const HashMap = () => {
 		// if no nodes in bucket, add node to bucket
 		if (!hashmap[index]) {
 			hashmap[index] = [new Node(key, value, null)];
+			// check if we've reached load level
+			if (triggerExpand()) {
+				capacity *= 2;
+				repopulateHashmap();
+			}
 		} else {
 			// create new node
 			newNode = new Node(key, value, null);
 			length = hashmap[index].length;
 
-			// see if current bucket contains the same key, if so, exit
+			// see if current bucket contains the same key, if so, update its value and exit
 			for (let i = 0; i < length; i++) {
 				if (hashmap[index][i].key == newNode.key) {
+					hashmap[index][i].value = value;
 					return;
 				}
 			}
@@ -160,7 +167,7 @@ const HashMap = () => {
 		}
 	};
 
-	let length = () => {
+	let getLength = () => {
 		// declare count variable
 		let count = 0;
 
@@ -253,6 +260,23 @@ const HashMap = () => {
 		return entryArray;
 	};
 
+	let triggerExpand = () => {
+		let targetBuckets = capacity * 0.75;
+		console.log(getLength());
+		if (getLength() > targetBuckets) {
+			return true;
+		}
+		return false;
+	};
+
+	let repopulateHashmap = () => {
+		let currentEntries = HashMap.entries();
+		HashMap.clear();
+		for (let i = 0; i < currentEntries.length; i++) {
+			set(currentEntries[i][0], currentEntries[i][1]);
+		}
+	};
+
 	let print = () => {
 		return hashmap;
 	};
@@ -264,7 +288,7 @@ const HashMap = () => {
 		get,
 		has,
 		remove,
-		length,
+		getLength,
 		clear,
 		keys,
 		values,
@@ -273,7 +297,7 @@ const HashMap = () => {
 };
 
 let mappyMap = HashMap();
-mappyMap.set('Fred', 'Smith');
+mappyMap.getLength();
 mappyMap.set('apple', 'red');
 mappyMap.set('banana', 'yellow');
 mappyMap.set('carrot', 'orange');
@@ -287,14 +311,11 @@ mappyMap.set('jacket', 'blue');
 mappyMap.set('kite', 'pink');
 mappyMap.set('lion', 'golden');
 
-console.log(mappyMap.get('Fred'));
-console.log(mappyMap.has('Fred'));
-console.log(mappyMap.has('Donna'));
-console.log(mappyMap.length());
+console.log(mappyMap.entries());
 
+mappyMap.set('kite', 'booyah');
+console.log(mappyMap.getLength());
 console.log(mappyMap.print());
 
-console.log(mappyMap.keys());
-console.log(mappyMap.values());
-console.log(mappyMap.entries());
+mappyMap.set('moon', 'silver');
 console.log(mappyMap.print());
