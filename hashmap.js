@@ -4,23 +4,19 @@ class Node {
 		this.value = value;
 		this.node = node;
 	}
-
-	set node(newNode) {
-		this._node = newNode;
-	}
 }
 
-const HashMap = () => {
+export const HashMap = () => {
 	const LOAD_FACTOR = 0.75;
 	let capacity = 16;
 	let hashmap = [];
 
+	// create hash code given a key
 	let hash = (key) => {
 		let hashCode = 0;
 
 		const primeNumber = 31;
 		for (let i = 0; i < key.length; i++) {
-			console.log(capacity);
 			hashCode = primeNumber * hashCode + key.charCodeAt(i);
 			hashCode = hashCode % capacity;
 		}
@@ -40,15 +36,10 @@ const HashMap = () => {
 		// if no nodes in bucket, add node to bucket
 		if (!hashmap[index]) {
 			hashmap[index] = [new Node(key, value, null)];
-			// check if we've reached load level
-			if (triggerExpand()) {
-				capacity *= 2;
-				repopulateHashmap();
-			}
 		} else {
 			// create new node
-			newNode = new Node(key, value, null);
-			length = hashmap[index].length;
+			let newNode = new Node(key, value, null);
+			let length = hashmap[index].length;
 
 			// see if current bucket contains the same key, if so, update its value and exit
 			for (let i = 0; i < length; i++) {
@@ -61,6 +52,14 @@ const HashMap = () => {
 			// add new node to bucket, add to linked list
 			hashmap[index][length - 1].node = newNode;
 			hashmap[index].push(newNode);
+		}
+
+		// check if we've reached load level
+		if (triggerExpand()) {
+			console.log('expansion triggered');
+			capacity *= 2;
+			console.log(capacity);
+			repopulateHashmap();
 		}
 	};
 
@@ -167,7 +166,8 @@ const HashMap = () => {
 		}
 	};
 
-	let getLength = () => {
+	// returns number of stored keys in the hash map
+	let length = () => {
 		// declare count variable
 		let count = 0;
 
@@ -190,6 +190,7 @@ const HashMap = () => {
 		return count;
 	};
 
+	// removes all entries in the hash map
 	let clear = () => {
 		// cycle through hash map
 		for (let i = 0; i < hashmap.length; i++) {
@@ -200,6 +201,7 @@ const HashMap = () => {
 		}
 	};
 
+	// returns an array of all the keys in the hash map
 	let keys = () => {
 		let keyArray = [];
 		// cycle through hash map
@@ -219,6 +221,7 @@ const HashMap = () => {
 		return keyArray;
 	};
 
+	// returns an array of all the values in the hash map
 	let values = () => {
 		let valueArray = [];
 		// cycle through hash map
@@ -238,6 +241,7 @@ const HashMap = () => {
 		return valueArray;
 	};
 
+	// returns an array of all the key, value pairs in the hash map
 	let entries = () => {
 		let entryArray = [];
 		// cycle through hash map
@@ -260,62 +264,38 @@ const HashMap = () => {
 		return entryArray;
 	};
 
+	// check if we need to expand our hash map aka double number of buckets
 	let triggerExpand = () => {
 		let targetBuckets = capacity * 0.75;
-		console.log(getLength());
-		if (getLength() > targetBuckets) {
+		let len = length();
+		console.log(len);
+		if (len > targetBuckets) {
+			console.log('limit reached!');
 			return true;
 		}
 		return false;
 	};
 
+	// clear out all entries and rehash them with a new capacity
+	// repopulate the hash map
 	let repopulateHashmap = () => {
-		let currentEntries = HashMap.entries();
-		HashMap.clear();
+		let currentEntries = entries();
+		clear();
 		for (let i = 0; i < currentEntries.length; i++) {
 			set(currentEntries[i][0], currentEntries[i][1]);
 		}
 	};
 
-	let print = () => {
-		return hashmap;
-	};
-
 	return {
 		hash,
 		set,
-		print,
 		get,
 		has,
 		remove,
-		getLength,
+		length,
 		clear,
 		keys,
 		values,
 		entries,
 	};
 };
-
-let mappyMap = HashMap();
-mappyMap.getLength();
-mappyMap.set('apple', 'red');
-mappyMap.set('banana', 'yellow');
-mappyMap.set('carrot', 'orange');
-mappyMap.set('dog', 'brown');
-mappyMap.set('elephant', 'gray');
-mappyMap.set('frog', 'green');
-mappyMap.set('grape', 'purple');
-mappyMap.set('hat', 'black');
-mappyMap.set('ice cream', 'white');
-mappyMap.set('jacket', 'blue');
-mappyMap.set('kite', 'pink');
-mappyMap.set('lion', 'golden');
-
-console.log(mappyMap.entries());
-
-mappyMap.set('kite', 'booyah');
-console.log(mappyMap.getLength());
-console.log(mappyMap.print());
-
-mappyMap.set('moon', 'silver');
-console.log(mappyMap.print());
